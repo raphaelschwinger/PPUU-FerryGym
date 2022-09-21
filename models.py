@@ -75,9 +75,23 @@ class encoder(nn.Module):
 
     def forward(self, images, states=None, actions=None):
         bsize = images.size(0)
+        print(images.shape)
+        print(states.shape)
+        print('height: ', self.opt.height)
+        print('width: ', self.opt.width)
+        print('n_inputs: ', self.opt.n_inputs)
+        print('n_channels: ', self.n_channels)
         h = self.f_encoder(images.view(bsize, self.n_inputs * self.n_channels, self.opt.height, self.opt.width))
+        print('h shape', h.shape)
+        print('h size: ', h.size())
         if states is not None:
-            h = h + self.s_encoder(states.contiguous().view(bsize, -1)).view(h.size())
+            print(states.contiguous().view(bsize, -1).shape)
+            s = self.s_encoder(states.contiguous().view(bsize, -1))
+            print('encoded shape', s.shape)
+            print('s h view: ', s.view(h.size()).shape)
+            h = h + s.view(h.size())
+            print('h size added: ', h.size())
+            # h = h + self.s_encoder(states.contiguous().view(bsize, -1)).view(h.size())
         if actions is not None:
             a = self.a_encoder(actions.contiguous().view(bsize, self.a_size))
             h = h + a.view(h.size())
@@ -185,11 +199,19 @@ class decoder(nn.Module):
     def forward(self, h):
         bsize = h.size(0)
         h = h.view(bsize, self.feature_maps[-1], self.opt.h_height, self.opt.h_width)
-        h_reduced = self.h_reducer(h).view(bsize, -1)
-        pred_state = self.s_predictor(h_reduced)
+        h_reduced = self.h_reducer(h)
+        h_reduced_view = h_reduced.view(bsize, -1)
+        print('bsize: ', bsize)
+        print('h size: ', h.size())
+        print('h_reduced size: ', h_reduced.size())
+        print('h_reduced_view size: ', h_reduced_view.size())
+        pred_state = self.s_predictor(h_reduced_view)
+        # h_reduced = self.h_reducer(h).view(bsize, -1)
+        # pred_state = self.s_predictor(h_reduced)
         pred_image = self.f_decoder(h)
         pred_image = pred_image[:, :, :self.opt.height, :self.opt.width].clone()
         pred_image = pred_image.view(bsize, 1, 3*self.n_out, self.opt.height, self.opt.width)
+        quit()
         return pred_image, pred_state
 
 
@@ -810,7 +832,7 @@ class StochasticPolicy(nn.Module):
         )
 
         if context_dim > 0:
-            self.context_encoder = nn.Sequential(
+        self.context_encoder = nn.Sequential(
                 nn.Linear(context_dim, opt.n_hidden),
                 nn.ReLU(),
                 nn.Linear(opt.n_hidden, opt.n_hidden),

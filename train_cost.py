@@ -65,7 +65,7 @@ opt.hidden_size = opt.nfeature*opt.h_height*opt.h_width
 
 model = torch.load(opt.model_dir + opt.mfile)
 cost = models.CostPredictor(opt).cuda()
-model.intype('gpu')
+# model.intype('gpu')
 optimizer = optim.Adam(cost.parameters(), opt.lrt)
 opt.model_file = opt.model_dir + opt.mfile + '.cost'
 print(f'[will save as: {opt.model_file}]')

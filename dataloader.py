@@ -12,10 +12,11 @@ class DataLoader:
         self.random.seed(12345)  # use this so that the same batches will always be picked
 
         if dataset == 'i80' or dataset == 'us101':
-            data_dir = f'traffic-data/state-action-cost/data_{dataset}_v0'
+            data_dir = f'/workspace/traffic-data/state-action-cost/data_{dataset}_v0'
         else:
             data_dir = dataset
 
+        print(f'[loading data from: {data_dir}]')
         if single_shard:
             # quick load for debugging
             data_files = [f'{next(os.walk(data_dir))[1][0]}.txt/']
