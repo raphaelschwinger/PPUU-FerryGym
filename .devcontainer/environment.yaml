@@ -1,0 +1,24 @@
+name: PPUU
+channels:
+  - pytorch
+  - defaults
+dependencies:
+  - imageio
+  - pandas
+  - python=3.8
+  - pytorch>1.2.0
+  - scipy
+  - matplotlib
+  - pip
+  - jupyter
+  - scikit-learn
+  - scikit-image
+  - pip:
+    - gym==0.17.1
+    - pygame>=2.0.0.dev6
+    - jupytext
+    - ipdb
+    - tb-nightly
+    - moviepy
+    - bqplot
+    - astropy
