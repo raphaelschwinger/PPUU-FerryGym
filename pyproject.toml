@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "ppuu-ferrygym"
+version = "0.1.0"
+description = ""
+authors = ["Raphael Schwinger <raphaelschwinger@gmail.com>"]
+readme = "README.md"
+packages = [{include = "ppuu_ferrygym"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+ferrygym = {git = "https://github.com/raphaelschwinger/FerryGym.git", branch="PPUU-FerryGym"}
+gql = "3.4.0"
+pandas = "1.5.3"
+aiohttp = "^3.8.4"
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
