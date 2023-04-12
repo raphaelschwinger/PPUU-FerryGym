@@ -12,6 +12,7 @@ ferrygym = {git = "https://github.com/raphaelschwinger/FerryGym.git", branch="PP
 gql = "3.4.0"
 pandas = "1.5.3"
 aiohttp = "^3.8.4"
+pandarallel = "^1.6.4"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "1.0.0"
