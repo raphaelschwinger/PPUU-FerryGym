@@ -15,6 +15,7 @@ services:
       # SSH directory
       - ~/.ssh:/home/vscode/.ssh
       - ~/.ssh:/root/.ssh
+    shm_size: 10gb
     command: /bin/sh -c "while sleep 1000; do :; done"
     deploy:
       resources:

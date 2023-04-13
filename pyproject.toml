@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["Raphael Schwinger <raphaelschwinger@gmail.com>"]
 readme = "README.md"
-packages = [{include = "ppuu_ferrygym"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -13,9 +12,8 @@ gql = "3.4.0"
 pandas = "1.5.3"
 aiohttp = "^3.8.4"
 pandarallel = "^1.6.4"
-
-[tool.poetry.group.dev.dependencies]
 jupyter = "1.0.0"
+
 
 [build-system]
 requires = ["poetry-core"]
