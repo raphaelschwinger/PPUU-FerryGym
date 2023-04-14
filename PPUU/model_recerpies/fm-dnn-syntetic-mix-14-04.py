@@ -1,8 +1,8 @@
 import torch, numpy, argparse, pdb, os, time, math, random
 # add /workspace to path
 import sys, os
-sys.path.append('/workspace')
-import utils
+sys.path.append('/workspace/PPUU/')
+import ppuu_utils
 from dataloader import DataLoader
 import torch.nn.functional as F
 import torch.optim as optim
@@ -26,7 +26,7 @@ parser.add_argument('-dataset', type=str, default='i80')
 parser.add_argument('-model', type=str, default='fwd-cnn')
 parser.add_argument('-layers', type=int, default=3, help='layers in frame encoder/decoders')
 parser.add_argument('-data_dir', type=str, default='traffic-data/state-action-cost/data_i80_v0/')
-parser.add_argument('-model_dir', type=str, default='models/27-10-fm-dnn-syntetic-mix/')
+parser.add_argument('-model_dir', type=str, default='models/14-04-fm-dnn-syntetic-mix/')
 parser.add_argument('-ncond', type=int, default=10, help='number of conditioning frames')
 parser.add_argument('-npred', type=int, default=20, help='number of predictions to make with unrolled fwd model')
 parser.add_argument('-batch_size', type=int, default=8)
@@ -46,7 +46,7 @@ parser.add_argument('-enable_tensorboard', action='store_true',
 parser.add_argument('-tensorboard_dir', type=str, default='models',
                     help='path to the directory where to save tensorboard log. If passed empty path' \
                          ' no logs are saved.')
-parser.add_argument('-synthetic', type=float, default=0.5, help='fraction of synthetic training data')
+parser.add_argument('-synthetic', type=float, default=0.1, help='fraction of synthetic training data')
 opt = parser.parse_args()
 
 os.system('mkdir -p ' + opt.model_dir)
@@ -55,7 +55,9 @@ random.seed(opt.seed)
 numpy.random.seed(opt.seed)
 torch.manual_seed(opt.seed)
 torch.cuda.manual_seed(opt.seed)
-dataloader = DataLoader(opt, data_dir='/workspace/data/rev-moenk2/training/', dataframe='df_2022-04-01 12:00:01.pkl')
+opt.loadImagesInMemory = False
+DATASET = 'rev-moenk-22-04-01-12-00--04-07'
+dataloader = DataLoader(opt, data_dir='/workspace/data/' + DATASET + '/', dataframe= DATASET + '.pkl', image_dir= '/workspace/data/' +DATASET + '/images/')
 
 
 # define model file name
@@ -99,7 +101,7 @@ if os.path.isfile(mfile):
     optimizer = optim.Adam(model.parameters(), opt.lrt)
     optimizer.load_state_dict(checkpoint['optimizer'])
     n_iter = checkpoint['n_iter']
-    utils.log(opt.model_file + '.log', '[resuming from checkpoint]')
+    ppuu_utils.log(opt.model_file + '.log', '[resuming from checkpoint]')
 else:
     # specify deterministic model we use to initialize parameters with
     if opt.warmstart == 1:
@@ -173,7 +175,7 @@ def train(nbatches, npred):
         # VAEs get NaN loss sometimes, so check for it
         if not math.isnan(loss.item()):
             loss.backward(retain_graph=False)
-            if not math.isnan(utils.grad_norm(model).item()):
+            if not math.isnan(ppuu_utils.grad_norm(model).item()):
                 torch.nn.utils.clip_grad_norm_(model.parameters(), opt.grad_clip)
                 optimizer.step()
 
@@ -209,7 +211,8 @@ def test(nbatches):
     total_loss_p /= nbatches
     return total_loss_i, total_loss_s, total_loss_p
 
-writer = utils.create_tensorboard_writer(opt)
+writer = ppuu_utils.create_tensorboard_writer(opt)
+
 
 print('[training]')
 for i in range(200):
@@ -235,10 +238,10 @@ for i in range(200):
         torch.save(model, opt.model_file + f'.step{n_iter}.model')
     model.cuda()
     log_string = f'step {n_iter} | '
-    log_string += utils.format_losses(*train_losses, split='train')
-    log_string += utils.format_losses(*valid_losses, split='valid')
+    log_string += ppuu_utils.format_losses(*train_losses, split='train')
+    log_string += ppuu_utils.format_losses(*valid_losses, split='valid')
     print(log_string)
-    utils.log(opt.model_file + '.log', log_string)
+    ppuu_utils.log(opt.model_file + '.log', log_string)
 
 if writer is not None:
     writer.close()

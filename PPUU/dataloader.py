@@ -21,7 +21,7 @@ The DataLoader has the following responsibilities:
 
 
 class DataLoader:
-    def __init__(self, opt, data_dir='/workspace/data/rev-moenk2/training/', dataframe='df_2022-04-01 12:00:01.pkl',image_dir='/workspace/data/rev-moenk2/training/images/', single_shard=False, seedRandom=False, zeroNeighbourhoodPath = './empty_neighbourhood.npy'):
+    def __init__(self, opt, data_dir='/workspace/data/rev-moenk2/training/', dataframe='df_2022-04-01 12:00:01.pkl',image_dir='/workspace/data/rev-moenk2/training/images/', single_shard=False, seedRandom=False):
         if opt.debug:
             single_shard = True
         self.opt = opt
@@ -36,6 +36,7 @@ class DataLoader:
         self.costs = []
         self.states = []
         self.ids = []
+        zeroNeighbourhoodPath =  os.path.join(os.path.dirname(os.path.abspath(__file__)), "empty_neighbourhood.npy")
         self.zero_neighbourhood = torch.tensor(np.load(zeroNeighbourhoodPath)).permute(2,0,1)
 
         if opt.loadImagesInMemory:
@@ -346,7 +347,7 @@ class DataLoader:
             batch_actions = []
             batch_states.append(start_state)
             for i in range(self.opt.ncond-1):
-                next_state = utils.integrate_state(batch_states[-1], zero_action)
+                next_state = ppuu_utils.integrate_state(batch_states[-1], zero_action)
                 batch_states.append(torch.tensor(next_state))
             # sample random action
             action = self.sample_syntetic_action(batch_states[-1])
@@ -354,11 +355,11 @@ class DataLoader:
             nsteps = np.random.randint(1, self.opt.npred)
             # integrate action for nsteps
             for i in range(nsteps):
-                next_state = utils.integrate_state(batch_states[-1], action)
+                next_state = ppuu_utils.integrate_state(batch_states[-1], action)
                 batch_states.append(torch.tensor(next_state))
                 batch_actions.append(torch.tensor(action))
             for i in range(self.opt.npred - nsteps):
-                next_state = utils.integrate_state(batch_states[-1], zero_action)
+                next_state = ppuu_utils.integrate_state(batch_states[-1], zero_action)
                 batch_states.append(torch.tensor(next_state))
                 batch_actions.append(torch.tensor(zero_action))
 
