@@ -38,6 +38,9 @@ class DataLoader:
         self.ids = []
         self.zero_neighbourhood = torch.tensor(np.load(zeroNeighbourhoodPath)).permute(2,0,1)
 
+        if opt.loadImagesInMemory:
+            self.df = self.load_images_in_memory(self.image_dir) 
+
 
         # preprocess data for ncond
         N = self.opt.ncond
@@ -133,6 +136,21 @@ class DataLoader:
             's_std': self.s_std,
         }
 
+    def load_images_in_memory(self, image_dir):
+        """load images in memory
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            the dataframe containing the image paths
+        image_dir : str
+            the directory containing the images
+        """
+        print('[loading images in memory]')
+        self.df['image'] = self.df.apply(lambda row: numpy.load(self.image_dir +row['filename']), axis=1)
+
+
+
     
     def get_batch_fm(self, split, npred=-1, cuda=True, onlyMoving=False, onlyTurning=False, onlyOtherShips=False):
         """get a batch of data for training a model
@@ -221,7 +239,10 @@ class DataLoader:
                     state = torch.tensor([x, y, speed, direction], dtype=torch.float)
                     batch_states.append(state)
                     # load image
-                    image = numpy.load(self.image_dir +self.df.loc[index]['filename'])
+                    if self.opt.loadImagesInMemory:
+                        image = self.df.loc[index]['image']
+                    else:
+                        image = numpy.load(self.image_dir +self.df.loc[index]['filename'])
                     # save as torch tensor
                     image = torch.from_numpy(image).type(torch.uint8)
                     image = image.permute(2, 0, 1)
@@ -240,8 +261,11 @@ class DataLoader:
                     direction = self.df.loc[index]['direction']
                     state = torch.tensor([x, y, speed, direction], dtype=torch.float)
                     batch_target_states.append(state)
-                    # load image
-                    image = numpy.load(self.image_dir +self.df.loc[index]['filename'])
+                     # load image
+                    if self.opt.loadImagesInMemory:
+                        image = self.df.loc[index]['image']
+                    else:
+                        image = numpy.load(self.image_dir +self.df.loc[index]['filename'])
                     # save as torch tensor
                     image = torch.from_numpy(image).type(torch.uint8)
                     image = image.permute(2, 0, 1)

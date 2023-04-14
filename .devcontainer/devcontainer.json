@@ -1,7 +1,7 @@
 {
-	"name": "Anaconda (Python 3)",
+	"name": "PPUU-FerryGym-Test2",
 	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
+	"service": "devcontainer",
 	"workspaceFolder": "/workspace",
 	// "build": { 
 	// 	"context": "..",

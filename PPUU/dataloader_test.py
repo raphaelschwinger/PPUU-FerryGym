@@ -1,7 +1,7 @@
-import utils
 import numpy as np
 import torch
 
+import ppuu_utils
 # test batch_size, npred and ncond
 def check_dimensions(inputs, actions, targets, batch_size, npred, ncond):
     if inputs[0].shape[0] != batch_size or inputs[1].shape[0] != batch_size or targets[0].shape[0] != batch_size or targets[1].shape[0] != batch_size or actions.shape[0] != batch_size:
@@ -18,7 +18,7 @@ def check_dimensions(inputs, actions, targets, batch_size, npred, ncond):
 # get rows from state
 def get_rows_from_states(dataloader, states, df):
     # denormalize states
-    states = utils.denormalize_states(states, dataloader.get_stats()).detach().cpu().numpy()
+    states = ppuu_utils.denormalize_states(states, dataloader.get_stats()).detach().cpu().numpy()
     N = 0.0005
     rows = np.empty((states.shape[0], states.shape[1]), dtype=object)
     for i in range(states.shape[0]):
@@ -112,7 +112,7 @@ def check_position_integration(rows, N=0.01):
             y2 = rows[i][j+1]['y']
             acceleration = rows[i][j]['acceleration']
             direction_change = rows[i][j]['direction_change']
-            x2_, y2_, _, _ = utils.integrate_state([x, y, speed, direction], [acceleration, direction_change])
+            x2_, y2_, _, _ = ppuu_utils.integrate_state([x, y, speed, direction], [acceleration, direction_change])
             # check if new position is correct
             if x2 > x2_ + N or x2 < x2_ - N or y2 > y2_ + N or y2 < y2_ - N:
                 print('indicies: ', i, j)
@@ -128,7 +128,7 @@ def check_position_integration(rows, N=0.01):
 # check if state, action integration is correct
 def check_state_action_integration(dataloader, rows, actions, ncond, N=0.01):
     # denormalize
-    actions = utils.denormalize_actions(actions, dataloader.get_stats())
+    actions = ppuu_utils.denormalize_actions(actions, dataloader.get_stats())
     for i in range(rows.shape[0]):
         for j in range(ncond -1, rows.shape[1]-1):
             speed = rows[i][j]['speed_calculated']
@@ -138,7 +138,7 @@ def check_state_action_integration(dataloader, rows, actions, ncond, N=0.01):
             x2 = rows[i][j+1]['x']
             y2 = rows[i][j+1]['y']
             action = actions[i][j-ncond+1]
-            x2_, y2_, _, _ = utils.integrate_state([x, y, speed, direction], action)
+            x2_, y2_, _, _ = ppuu_utils.integrate_state([x, y, speed, direction], action)
             if x2 > x2_ + N or x2 < x2_ - N or y2 > y2_ + N or y2 < y2_ - N:
                 print('indicies: ', i, j)
                 print('position integration is not correct')
@@ -152,9 +152,9 @@ def check_state_action_integration(dataloader, rows, actions, ncond, N=0.01):
     return True
 
 def check_state_action_target_integration(dataloader, inputs, actions, targets, ncond, N=0.01):
-    input_states = utils.denormalize_states(inputs[1], dataloader.get_stats())
-    target_states = utils.denormalize_states(targets[1], dataloader.get_stats())
-    actions = utils.denormalize_actions(actions, dataloader.get_stats()).cpu().numpy()
+    input_states = ppuu_utils.denormalize_states(inputs[1], dataloader.get_stats())
+    target_states = ppuu_utils.denormalize_states(targets[1], dataloader.get_stats())
+    actions = ppuu_utils.denormalize_actions(actions, dataloader.get_stats()).cpu().numpy()
     # concat input_states and target_states
     states = torch.cat((input_states, target_states), dim=1).cpu().numpy()
     for i in range(states.shape[0]):
@@ -166,7 +166,7 @@ def check_state_action_target_integration(dataloader, inputs, actions, targets, 
             x2 = states[i][j+1][0]
             y2 = states[i][j+1][1]
             action = actions[i][j-ncond+1]
-            x2_, y2_, _, _ = utils.integrate_state([x, y, speed, direction], action)
+            x2_, y2_, _, _ = ppuu_utils.integrate_state([x, y, speed, direction], action)
             if x2 > x2_ + N or x2 < x2_ - N or y2 > y2_ + N or y2 < y2_ - N:
                 print('indicies: ', i, j)
                 print('position integration is not correct')

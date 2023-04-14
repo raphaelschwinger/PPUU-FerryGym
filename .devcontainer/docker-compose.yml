@@ -1,6 +1,6 @@
 version: '2'
 services:
-  app:
+  devcontainer:
     build: .
     environment:
       - DISPLAY=novnc:0.0
@@ -32,7 +32,7 @@ services:
       - DISPLAY_HEIGHT=1024
       - RUN_XTERM=no
     ports:
-      - "8099:8080"
+      - "8098:8080"
     networks:
       - x11
 networks:
