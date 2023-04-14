@@ -6,13 +6,18 @@ authors = ["Raphael Schwinger <raphaelschwinger@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.12"
 ferrygym = {git = "https://github.com/raphaelschwinger/FerryGym.git", branch="PPUU-FerryGym"}
 gql = "3.4.0"
 pandas = "1.5.3"
 aiohttp = "^3.8.4"
 pandarallel = "^1.6.4"
 jupyter = "1.0.0"
+scipy = "^1.10.1"
+torch = "^2.0.0"
+sklearn = "^0.0.post4"
+scikit-learn = "^1.2.2"
+tensorboard = "^2.12.1"
 
 
 [build-system]
