@@ -29,7 +29,7 @@ parser.add_argument('-data_dir', type=str, default='traffic-data/state-action-co
 parser.add_argument('-model_dir', type=str, default='models/14-04-fm-dnn-syntetic-mix/')
 parser.add_argument('-ncond', type=int, default=10, help='number of conditioning frames')
 parser.add_argument('-npred', type=int, default=20, help='number of predictions to make with unrolled fwd model')
-parser.add_argument('-batch_size', type=int, default=8)
+parser.add_argument('-batch_size', type=int, default=32)
 parser.add_argument('-nfeature', type=int, default=256)
 parser.add_argument('-beta', type=float, default=1e-06, help='coefficient for KL term in VAE')
 parser.add_argument('-ploss', type=str, default='hinge')
@@ -38,7 +38,7 @@ parser.add_argument('-dropout', type=float, default=0.1, help='regular dropout')
 parser.add_argument('-nz', type=int, default=32)
 parser.add_argument('-lrt', type=float, default=0.0001)
 parser.add_argument('-grad_clip', type=float, default=5.0)
-parser.add_argument('-epoch_size', type=int, default=2000)
+parser.add_argument('-epoch_size', type=int, default=200)
 parser.add_argument('-warmstart', type=int, default=0, help='initialize with pretrained model')
 parser.add_argument('-debug', action='store_true')
 parser.add_argument('-enable_tensorboard', action='store_true',
@@ -119,6 +119,7 @@ else:
     optimizer = optim.Adam(model.parameters(), opt.lrt)
     n_iter = 0
 
+model = nn.DataParallel(model)
 model.cuda()
 
 
@@ -215,7 +216,7 @@ writer = ppuu_utils.create_tensorboard_writer(opt)
 
 
 print('[training]')
-for i in range(200):
+for i in range(2000):
     t0 = time.time()
     train_losses = train(opt.epoch_size, opt.npred)
     valid_losses = test(int(opt.epoch_size / 2))
