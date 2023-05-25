@@ -1,2 +1,5 @@
 # ignore data directory
 data/*
+
+# allow sample dataset
+!data/rev-moenk-22-04-01-12-00--04-02/rev-moenk-22-04-01-12-00--04-02.pkl
