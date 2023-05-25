@@ -3,7 +3,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import random, pdb, copy, os, math, numpy, copy, time
-import ppuu_utils
+
+# set path to /workspace
+import sys
+sys.path.append('/workspace/')
+import PPUU.ppuu_utils
 
 
 """

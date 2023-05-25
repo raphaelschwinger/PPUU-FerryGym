@@ -677,11 +677,11 @@ def save_batch(inputs, actions, targets, preds, stats, batch_no, save_path):
     }
     torch.save(batch, save_path)
 
-def load_batch(path):
+def load_batch(path, device='cuda:0'):
     """
     Load batch of images and states from file
     """
-    batch = torch.load(path)
+    batch = torch.load(path, map_location=device)
     inputs = batch['inputs']
     actions = batch['actions']
     targets = batch['targets']
