@@ -169,19 +169,17 @@ def plot_image(image):
     plt.imshow(image)
     plt.gca().invert_yaxis()
 
-def load_environment(random_startingTime = True, render_observation=True):
+def load_environment(render_observation=True):
     kwargs = dict(
         generate_training_data=False,
-        data_directory='/workspace/data/rev-moenk2/training/',
-        df_filename='df_2022-04-01 12:00:01.pkl',
-        startingTime=datetime.datetime(2022, 4, 1, 12, 0, 1),
-        random_startingTime=random_startingTime,
+        data_directory='/workspace/data/rev-moenk/training/',
+        df_filename='2022-04-10-13->14.pkl',
         render_observation=render_observation,
     )
 
     gym.register(
         id="FerryGym-v0",
-        entry_point="FerryGymEnv.FerryGymEnv:FerryGymEnv",
+        entry_point="FerryGymEnv:FerryGymEnv",
         kwargs=kwargs,
     )
 
