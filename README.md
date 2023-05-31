@@ -31,6 +31,7 @@ also be used to evaluate other algorithms.
     * connect editor of choice to container
     * (if you are using vs code dont forget to install python extension)
 * preprocess data with `preprocess-dataset.ipynb', '/workspace/data/rev-moenk2' is the default data path (see below)
+* download pretrained models and large files with `git lfs pull`
 
 ## NN training:
 * recipes for different networks are located in `/model_recipes`
